@@ -1,26 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Memory Leaks</title>
     <script type="module" src="scripts/main.js"></script>
-  </head>
-  <body>
-    <h1>Hello, memory leaks!</h1>
-    <script>
-      const container = document.createElement('div');
-      document.body.appendChild(container);
+</head>
 
-      let char = 'X';
-      setInterval(()=>{
-        const p = document.createElement('p');
-        char = char === 'X' ? 'O' : 'X';
-        p.innerText = new Array(100000).join(char);
-        container.innerHTML = '';
-        container.appendChild(p);
-      }, 1000);
+<body>
+    <h1>Hello, memory leaks!</h1>
+    <button onclick="script1()">Script 1</button>
+    <button onclick="script2()">Script 2</button>
+    <button onclick="script3()">Script 3</button>
+    <button onclick="stop()">Stop</button>
+    <script>
+        container = document.createElement('div');
+        document.body.appendChild(container);
+        char = 'X';
+        interval1 = null;
+
+        function script1()
+        {
+            // container is cleared by setting innerHTML an empty string
+            interval1 = setInterval(() => {
+                const p = document.createElement('p');
+                char = char === 'X' ? 'O' : 'X';
+                p.innerText = new Array(100000).join(char);
+                container.innerHTML = '';
+                container.appendChild(p);
+            }, 1000);
+        }
+
+        nodes = [];
+        interval2 = null;
+        function script2()
+        {
+            // container is cleared by with removeChild method
+            // nodes are stored in the array
+            interval2 = setInterval(() => {
+                const p = document.createElement('p');
+                char = char === 'X' ? 'O' : 'X';
+                p.innerText = new Array(100000).join(char);
+                nodes.length && container.removeChild(nodes[nodes.length - 1]);
+                container.appendChild(p);
+                nodes.push(p);
+            }, 1000);
+        }
+
+        interval3 = null;
+        function script3()
+        {
+            // container is cleared by with removeChild method
+            // nodes are popped from the array each tick
+            interval3 = setInterval(() => {
+                const p = document.createElement('p');
+                char = char === 'X' ? 'O' : 'X';
+                p.innerText = new Array(100000).join(char);
+                nodes.length && container.removeChild(nodes.pop());
+                container.appendChild(p);
+                nodes.push(p);
+            }, 1000);
+        }
+
+        function stop() {
+            clearInterval(interval1);
+            clearInterval(interval2);
+            clearInterval(interval3);
+            nodes = []
+        }
     </script>
-  </body>
+</body>
+
 </html>
