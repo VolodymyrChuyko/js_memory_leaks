@@ -11,66 +11,57 @@
 
 <body>
     <h1>Hello, memory leaks!</h1>
-    <button onclick="script1()">Script 1</button>
-    <button onclick="script2()">Script 2</button>
-    <button onclick="script3()">Script 3</button>
-    <button onclick="stop()">Stop</button>
     <script>
-        container = document.createElement('div');
-        document.body.appendChild(container);
-        char = 'X';
-        interval1 = null;
 
-        function script1()
-        {
-            // container is cleared by setting innerHTML an empty string
-            interval1 = setInterval(() => {
-                const p = document.createElement('p');
-                char = char === 'X' ? 'O' : 'X';
-                p.innerText = new Array(100000).join(char);
-                container.innerHTML = '';
-                container.appendChild(p);
-            }, 1000);
-        }
-
-        nodes = [];
-        interval2 = null;
-        function script2()
-        {
-            // container is cleared by with removeChild method
-            // nodes are stored in the array
-            interval2 = setInterval(() => {
-                const p = document.createElement('p');
-                char = char === 'X' ? 'O' : 'X';
-                p.innerText = new Array(100000).join(char);
-                nodes.length && container.removeChild(nodes[nodes.length - 1]);
-                container.appendChild(p);
-                nodes.push(p);
-            }, 1000);
-        }
-
-        interval3 = null;
-        function script3()
-        {
-            // container is cleared by with removeChild method
-            // nodes are popped from the array each tick
-            interval3 = setInterval(() => {
-                const p = document.createElement('p');
-                char = char === 'X' ? 'O' : 'X';
-                p.innerText = new Array(100000).join(char);
-                nodes.length && container.removeChild(nodes.pop());
-                container.appendChild(p);
-                nodes.push(p);
-            }, 1000);
-        }
-
-        function stop() {
-            clearInterval(interval1);
-            clearInterval(interval2);
-            clearInterval(interval3);
-            nodes = []
-        }
     </script>
+
+    <button onclick="createContainer()">Create a container</button>
+    <button onclick="removeContainer()">Remove a container</button>
+    <button onclick="addSomeParagraph()">Add some paragraph</button>
+    <button onclick="addTrickyParagraph()">Add tricky paragraph</button>
+
+    <script>
+        function createContainer()
+        {
+            if (document.getElementById('container'))
+                return;
+
+            const container = document.createElement('div');
+            container.setAttribute('id', 'container');
+            document.body.appendChild(container);
+        }
+
+        function removeContainer()
+        {
+            const container = document.getElementById('container');
+            if (container)
+                container.remove();
+        }
+
+        function addSomeParagraph()
+        {
+            const container = document.getElementById('container');
+            if (!container)
+                return
+
+            const newParagraph = document.createElement('p');
+            newParagraph.textContent = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione atque debitis perspiciatis. Labore nesciunt reiciendis voluptatum ipsam nihil, sit quia. Perferendis assumenda fugit aspernatur voluptatum. Vero consequatur deleniti quasi itaque';
+            container.appendChild(newParagraph);
+        }
+
+        function addTrickyParagraph()
+        {
+            const container = document.getElementById('container');
+            if (!container)
+                return
+
+            newParagraph = document.createElement('p');
+            newParagraph.textContent = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione atque debitis perspiciatis. Labore nesciunt reiciendis voluptatum ipsam nihil, sit quia. Perferendis assumenda fugit aspernatur voluptatum. Vero consequatur deleniti quasi itaque';
+            container.appendChild(newParagraph);
+        }
+
+    </script>
+
 </body>
 
 </html>
