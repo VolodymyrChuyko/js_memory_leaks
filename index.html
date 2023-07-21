@@ -1,26 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Memory Leaks</title>
     <script type="module" src="scripts/main.js"></script>
-  </head>
-  <body>
+</head>
+
+<body>
     <h1>Hello, memory leaks!</h1>
     <script>
-      const container = document.createElement('div');
-      document.body.appendChild(container);
 
-      let char = 'X';
-      setInterval(()=>{
-        const p = document.createElement('p');
-        char = char === 'X' ? 'O' : 'X';
-        p.innerText = new Array(100000).join(char);
-        container.innerHTML = '';
-        container.appendChild(p);
-      }, 1000);
     </script>
-  </body>
+
+    <button onclick="createContainer()">Create a container</button>
+    <button onclick="removeContainer()">Remove a container</button>
+    <button onclick="addSomeParagraph()">Add some paragraph</button>
+    <button onclick="addTrickyParagraph()">Add tricky paragraph</button>
+
+    <script>
+        function createContainer()
+        {
+            if (document.getElementById('container'))
+                return;
+
+            const container = document.createElement('div');
+            container.setAttribute('id', 'container');
+            document.body.appendChild(container);
+        }
+
+        function removeContainer()
+        {
+            const container = document.getElementById('container');
+            if (container)
+                container.remove();
+        }
+
+        function addSomeParagraph()
+        {
+            const container = document.getElementById('container');
+            if (!container)
+                return
+
+            const newParagraph = document.createElement('p');
+            newParagraph.textContent = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione atque debitis perspiciatis. Labore nesciunt reiciendis voluptatum ipsam nihil, sit quia. Perferendis assumenda fugit aspernatur voluptatum. Vero consequatur deleniti quasi itaque';
+            container.appendChild(newParagraph);
+        }
+
+        function addTrickyParagraph()
+        {
+            const container = document.getElementById('container');
+            if (!container)
+                return
+
+            newParagraph = document.createElement('p');
+            newParagraph.textContent = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione atque debitis perspiciatis. Labore nesciunt reiciendis voluptatum ipsam nihil, sit quia. Perferendis assumenda fugit aspernatur voluptatum. Vero consequatur deleniti quasi itaque';
+            container.appendChild(newParagraph);
+        }
+
+    </script>
+
+</body>
+
 </html>
