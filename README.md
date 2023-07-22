@@ -14,5 +14,25 @@ Most garbage collectors use an algorithm known as mark-and-sweep. The algorithm 
 
 The main cause for leaks in garbage collected languages are unwanted references. In the context of JavaScript, unwanted references are variables kept somewhere in the code that will not be used anymore and point to a piece of memory that could otherwise be freed.
 
-In this example (see [DEMO LINK](https://volodymyrchuyko.github.io/js_memory_leaks/)), a new `p` element is created and appended to the `div` container every second. Though the container's `innerHTML` is cleaned every time before appending new elements, they are not removed from the DOM tree. This causes a memory leak.
+Try this [STAND](https://volodymyrchuyko.github.io/js_memory_leaks/) to investigate memory leaks.
 
+Follow the next steps:
+   1. Open Developer tools on the `Memory` tab and take the first snapshot
+   ![Step 1: Take a snapshot](./images/step1.png)
+
+   1. Click the `Create a container` button. This will add a `div` element to the page. Take the second snapshot. Choose `Comparison` in the dropdown menu and make sure the `HTMLDivElement` was added.
+   ![Step 2: Add a container](./images/step2.png)
+
+   1. Click the `Add some paragraph` button. See that some text has been added to the page. Take a snapshot and make sure the `HTMLParagraphElement` was added.
+   ![Step 3: Add a paragraph](./images/step3.png)
+
+   1. Click the `Remove a container` button. Notice that the `div-container` has been removed from the page with all the text. Take a snapshot and make sure the `HTMLDivElement` and `HTMLParagraphElement` were removed.
+   ![Step 4: Remove a container](./images/step4.png)
+
+   1. Now repeat steps 1-4 but use the `Add tricky paragraph` button instead of `Add some paragraph` this time. Notice that the `HTMLDivElement` and `HTMLParagraphElement` were removed like it was the previous time. However, the `Detached HTMLDivElement` and `Detached HTMLParagraphElement` appeared.
+   ![Step 5: Add tricky paragraph](./images/step5.png)
+
+Why did that happen? Let's investigate the code to find out the answer.
+
+At first glance, the `addSomeParagraph` and `addTrickyParagraph` functions may seem the same but look carefully. Someone has forgotten the `const` keyword while declaring the `newParagraph` variable. So the global variable `newParagraph` was created. It contains the reference to the `Detached HTMLParagraphElement`, which in his turn has a reference to the `Detached HTMLDivElement` in his element.parentNode field. That is why they can not be collected.
+![Clarification](./images/clarification.png)
